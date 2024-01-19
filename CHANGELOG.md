@@ -1,13 +1,15 @@
-## [project-title] Changelog
+# Azure Samples: Azure Function with Event Hub and Virtual Network Changelog
 
-<a name="x.y.z"></a>
-# x.y.z (yyyy-mm-dd)
+## x.y.z (yyyy-mm-dd)
 
-*Features*
+### Features
+
 * ...
 
-*Bug Fixes*
+### Bug Fixes
+
 * ...
 
-*Breaking Changes*
+### Breaking Changes
+
 * ...
