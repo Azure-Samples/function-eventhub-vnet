@@ -15,9 +15,7 @@ param storageAccountName string
 ])
 param runtimeName string
 
-//NEW
-// NEW - These are incorrect for FUNCTIONS_WORKER_RUNTIME (https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings#functions_worker_runtime)
-// dotnetcore is not a valid value for FUNCTIONS_WORKER_RUNTIME
+// Valid values for FUNCTIONS_WORKER_RUNTIME (https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings#functions_worker_runtime)
 @allowed([
   'dotnet', 'dotnet-isolated', 'node', 'python', 'java', 'powershell', 'custom'
 ])
