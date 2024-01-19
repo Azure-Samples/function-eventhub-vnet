@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: '0 3 * * *'  # Runs at 11 PM ET, which is 3 AM UTC
   workflow_dispatch:
+  pull_request:
 
 # Set up permissions for deploying with secretless Azure federated credentials
 # https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#set-up-azure-login-with-openid-connect-authentication
