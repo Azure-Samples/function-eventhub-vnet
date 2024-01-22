@@ -1,3 +1,26 @@
+---
+page_type: sample
+languages:
+- csharp
+- azdeveloper
+- bicep
+- dockerfile
+products:
+- application-insights
+- azure-event-hubs
+- azure-functions
+- azure-key-vault
+- azure-monitor
+- azure-rbac
+- azure-storage
+- azure-storage-accounts
+- dotnet
+- virtual-network
+name: Azure Function with Event Hub with Virtual Network features
+urlFragment: function-eventhub-vnet
+description: This template will deploy an Azure Function, Event Hub, and supporting resources, with optional virtual network integration and private endpoints.
+---
+
 # Azure Function with Event Hub with Virtual Network features
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/azure-samples/function-eventhub-vnet)
