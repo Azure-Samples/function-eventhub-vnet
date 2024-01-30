@@ -6,6 +6,8 @@ languages:
 - bicep
 - dockerfile
 products:
+- azure
+- azure-monitor
 - application-insights
 - azure-event-hubs
 - azure-functions
@@ -15,7 +17,7 @@ products:
 - azure-storage
 - azure-storage-accounts
 - dotnet
-- virtual-network
+- azure-virtual-network
 name: Azure Function with Event Hub with Virtual Network features
 urlFragment: function-eventhub-vnet
 description: This template will deploy an Azure Function, Event Hub, and supporting resources, with optional virtual network integration and private endpoints.
