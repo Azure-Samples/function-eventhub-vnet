@@ -8,7 +8,6 @@ languages:
 products:
 - azure
 - azure-monitor
-- application-insights
 - azure-event-hubs
 - azure-functions
 - azure-key-vault
