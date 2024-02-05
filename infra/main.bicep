@@ -297,7 +297,7 @@ module functionApp 'core/host/functions.bicep' = {
     applicationInsightsName: appInsights.outputs.name
     virtualNetworkIntegrationSubnetId: useVirtualNetworkIntegration ? vnet.outputs.virtualNetworkSubnets[0].id : ''
     appSettings: {
-      EventHubConnection__fullyQualifiedNamespace: '${eventHubNamespace.outputs.eventHubNamespaceName}.servicebus.windows.net'
+      EVENTHUB_CONNECTION__fullyQualifiedNamespace: '${eventHubNamespace.outputs.eventHubNamespaceName}.servicebus.windows.net'
       EventHubName: eventHub.outputs.EventHubName
       EventHubConsumerGroup: eventHub.outputs.EventHubConsumerGroupName
 
@@ -323,3 +323,9 @@ module functionApp 'core/host/functions.bicep' = {
     }
   }
 }
+
+output APPLICATIONINSIGHTS_CONNECTION_STRING string = appInsights.outputs.connectionString
+output EVENTHUB_CONSUMER_GROUP_NAME string = eventHub.outputs.EventHubConsumerGroupName
+output EVENTHUB_NAME string = eventHub.outputs.EventHubName
+output EVENTHUB_NAMESPACE string = eventHubNamespace.outputs.eventHubNamespaceName
+output EVENTHUB_CONNECTION__fullyQualifiedNamespace string = '${eventHubNamespace.outputs.eventHubNamespaceName}.servicebus.windows.net'
