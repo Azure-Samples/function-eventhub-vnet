@@ -79,12 +79,20 @@ Optionally, use the included dev container which contains the necessary prerequi
 
 There are two options for getting started - clone the repo via `git clone` and make it your own, or use the Azure Developer CLI (AZD) to clone the template locally and set the AZD environment.
 
-#### Clone via git
+#### Option 1: Clone via git
 
 1. Use `git clone` to clone the repo.
 
-#### Initialize with AZD
+#### Option 2: Initialize with AZD
 
+1. Create a new directory (e.g., function-eventhub-vnet) and navigate to the new directory.
+    ```bash
+    # Create a new directory
+    mkdir function-eventhub-vnet
+
+    # Move to the new directory
+    cd function-eventhub-vnet
+    ```
 1. Authenticate with AZD, initialize the project and set the necessary environment settings.
 
     ```bash
@@ -139,14 +147,11 @@ If there is a desire to provision the Azure resources and [run the Azure Functio
     ```
 
 1. The Azure Function will make use of the environment variables specified in the current AZD environment. Additionally, your [local identity
-can be used to authenticate and interact with the Azure resources](https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob&pivots=programming-language-csharp#local-development-with-identity-based-connections), such as Event Hub.  Thereby using an identity-based connection locally.  The included `set-local-rbac.sh` script will load the environment variables and set the necessary RBAC permissions.
+can be used to authenticate and interact with the Azure resources](https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob&pivots=programming-language-csharp#local-development-with-identity-based-connections), such as Event Hub.  Thereby using an identity-based connection locally.  The included `set-local-rbac.sh` script will load the current AZD environment variables and set the necessary RBAC permissions.
 
-    1. Set the `AZD_ENVIRONMENT_NAME` variable in the script to the value of the current AZD environment.
-    1. Run the script:
-
-        ```bash
-        ./set-local-rbac.sh
-        ```
+    ```bash
+    ./set-local-rbac.sh
+    ```
 
 1. Start the Azurite storage emulator.
 1. Run the Azure Functions locally.  From the `/src` directory, run the `func host start` command.

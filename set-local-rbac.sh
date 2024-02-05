@@ -4,11 +4,13 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+
 # Load environment variables from AZD environment file.
 # EVENTHUB_NAMESPACE
 # AZURE_ENV_NAME
 # AZURE_SUBSCRIPTION_ID
-AZD_ENVIRONMENT_NAME="function-localdev"
+
+AZD_ENVIRONMENT_NAME=$(jq -r '.defaultEnvironment' .azure/config.json)
 echo "Loading environment variables from .env file for AZD environment '$AZD_ENVIRONMENT_NAME'."
 source "./.azure/$AZD_ENVIRONMENT_NAME/.env"
 
