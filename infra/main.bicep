@@ -298,8 +298,8 @@ module functionApp 'core/host/functions.bicep' = {
     virtualNetworkIntegrationSubnetId: useVirtualNetworkIntegration ? vnet.outputs.virtualNetworkSubnets[0].id : ''
     appSettings: {
       EVENTHUB_CONNECTION__fullyQualifiedNamespace: '${eventHubNamespace.outputs.eventHubNamespaceName}.servicebus.windows.net'
-      EventHubName: eventHub.outputs.EventHubName
-      EventHubConsumerGroup: eventHub.outputs.EventHubConsumerGroupName
+      EVENTHUB_NAME: eventHub.outputs.EventHubName
+      EVENTHUB_CONSUMER_GROUP_NAME: eventHub.outputs.EventHubConsumerGroupName
 
       // Needed for EP plans
       WEBSITE_CONTENTSHARE: functionAppName
