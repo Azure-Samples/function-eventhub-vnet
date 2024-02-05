@@ -8,25 +8,27 @@ set -o nounset
 # EVENTHUB_NAMESPACE
 # AZURE_ENV_NAME
 # AZURE_SUBSCRIPTION_ID
-set -o allexport; source ./.azure/func-eventhub-localdev/.env; set +o allexport
+AZD_ENVIRONMENT_NAME="function-localdev"
+echo "Loading environment variables from .env file for AZD environment '$AZD_ENVIRONMENT_NAME'."
+source "./.azure/$AZD_ENVIRONMENT_NAME/.env"
 
 # Try to get the current account details
 az account show &> /dev/null
 
 # Check the exit status of the last command
 if [ $? -eq 0 ]; then
-  echo "Logged in to Azure CLI."
+  echo "Logged in to the Azure CLI."
 else
-  echo "Not logged in to Azure CLI. Attempting to log in..."
+  echo "Not logged in to the Azure CLI. Attempting to log in..."
   az login
 fi
 
 echo "Setting the default subscription to $AZURE_SUBSCRIPTION_ID"
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 
-# Define the role IDs for the 'Azure Event Hubs Data Receiver' and 'Azure Event Hubs Data Owner' roles.
+# Define the role IDs for the 'Azure Event Hubs Data Receiver' and 'Azure Event Hubs Data Sender' roles.
 EVENT_HUBS_DATA_RECEIVER_ROLE_ID=$(az role definition list --name "Azure Event Hubs Data Receiver" --query []."name" -o tsv)
-EVENT_HUBS_DATA_OWNER_ROLE_ID=$(az role definition list --name "Azure Event Hubs Data Owner" --query []."name" -o tsv)
+EVENT_HUBS_DATA_SENDER_ROLE_ID=$(az role definition list --name "Azure Event Hubs Data Sender" --query []."name" -o tsv)
 
 # Define the resource group name (derived from the AZD environment name)
 RESOURCE_GROUP_NAME="rg-$AZURE_ENV_NAME"
@@ -45,9 +47,9 @@ az role assignment create \
     --assignee "$ASSIGNEE_ID" \
     --scope "$EVENT_HUBS_NAMESPACE_ID"
 
-# Assign self the 'Azure Event Hubs Data Owner' role.
-echo "Assigning the 'Azure Event Hubs Data Owner' role to $ASSIGNEE_ID"
+# Assign self the 'Azure Event Hubs Data Sender' role.
+echo "Assigning the 'Azure Event Hubs Data Sender' role to $ASSIGNEE_ID"
 az role assignment create \
-    --role "$EVENT_HUBS_DATA_OWNER_ROLE_ID" \
+    --role "$EVENT_HUBS_DATA_SENDER_ROLE_ID" \
     --assignee "$ASSIGNEE_ID" \
     --scope "$EVENT_HUBS_NAMESPACE_ID"

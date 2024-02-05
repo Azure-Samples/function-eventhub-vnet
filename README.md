@@ -141,9 +141,12 @@ If there is a desire to provision the Azure resources and [run the Azure Functio
 1. The Azure Function will make use of the environment variables specified in the current AZD environment. Additionally, your [local identity
 can be used to authenticate and interact with the Azure resources](https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob&pivots=programming-language-csharp#local-development-with-identity-based-connections), such as Event Hub.  Thereby using an identity-based connection locally.  The included `set-local-rbac.sh` script will load the environment variables and set the necessary RBAC permissions.
 
-    ```bash
-    ./set-local-rbac.sh
-    ```
+    1. Set the `AZD_ENVIRONMENT_NAME` variable in the script to the value of the current AZD environment.
+    1. Run the script:
+
+        ```bash
+        ./set-local-rbac.sh
+        ```
 
 1. Start the Azurite storage emulator.
 1. Run the Azure Functions locally.  From the `/src` directory, run the `func host start` command.
