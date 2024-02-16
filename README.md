@@ -75,17 +75,24 @@ The following prerequisites are required to use this application.
 
 Optionally, use the included dev container which contains the necessary prerequisites.
 
-### Getting started
+### Get the code
 
-There are two options for getting started - clone the repo via `git clone` and make it your own, or use the Azure Developer CLI (AZD) to clone the template locally and set the AZD environment.
+There are two options for getting the code & related assets - clone the repo via `git clone` and make it your own, or use the Azure Developer CLI (AZD) to clone the template locally and set the AZD environment.
 
 #### Option 1: Clone via git
 
 1. Use `git clone` to clone the repo.
+1. Authenticate with AZD.
+
+    ```bash
+    # Log in to AZD.
+    azd auth login
+    ```
 
 #### Option 2: Initialize with AZD
 
 1. Create a new directory (e.g., function-eventhub-vnet) and navigate to the new directory.
+
     ```bash
     # Create a new directory
     mkdir function-eventhub-vnet
@@ -93,6 +100,7 @@ There are two options for getting started - clone the repo via `git clone` and m
     # Move to the new directory
     cd function-eventhub-vnet
     ```
+
 1. Authenticate with AZD, initialize the project and set the necessary environment settings.
 
     ```bash
@@ -105,7 +113,7 @@ There are two options for getting started - clone the repo via `git clone` and m
 
 1. When prompted by AZD, provide the name (e.g., "my-function-local") for the AZD environment to use without a virtual network.
 
-#### Set AZD environment variables
+### Set AZD environment variables
 
 1. If you don't yet have an AZD environment, create a new environment using the `azd env new` command.  For example,
 
@@ -149,7 +157,7 @@ If there is a desire to provision the Azure resources and [run the Azure Functio
       "IsEncrypted": false,
       "Values": {
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet"
       }
     }
     ```
@@ -161,7 +169,7 @@ If there is a desire to provision the Azure resources and [run the Azure Functio
     ```
 
 1. Alternatively, export the environment variables using the following command:
-    
+
     ```bash
     AZD_ENVIRONMENT_NAME=$(jq -r '.defaultEnvironment' .azure/config.json)
     set -a; source "./.azure/$AZD_ENVIRONMENT_NAME/.env"; set +a
@@ -180,13 +188,13 @@ To deploy to Azure, you can optionally create a new AZD environment.  Thereby ha
     azd env new my-function
     ```
   
-  1. Use AZD to provision the Azure resources and deploy the Azure Function code.
+1. Use AZD to provision the Azure resources and deploy the Azure Function code.
 
       ```bash
       azd up
       ```
 
-### Optional: Use a virtual network    
+### Optional: Use a virtual network
 
 1. Create an AZD environment for use with a virtual network, and set the necessary environment settings.
 
