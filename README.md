@@ -122,7 +122,15 @@ There are two options for getting started - clone the repo via `git clone` and m
 
 ### Run locally
 
-If there is a desire to provision the Azure resources and [run the Azure Function locally](https://learn.microsoft.com/azure/azure-functions/functions-develop-local) (e.g. dev & debugging purposes), you can use AZD (use the `azd provision` command) to provision the resources.  Once provisioned, update the [_local.settings.json_](https://learn.microsoft.com/azure/azure-functions/functions-develop-local#local-settings-file) file to refer to the newly provisioned Event Hub, Application Insights, and optionally Azure Storage (if not using Azurite).
+If there is a desire to provision the Azure resources and [run the Azure Function locally](https://learn.microsoft.com/azure/azure-functions/functions-develop-local) (e.g. dev & debugging purposes), you can use AZD (use the `azd provision` command) to provision the resources.  
+
+1. Ensure your local (currently logged in user) principal ID is specified in the `AZURE_PRINCIPAL_ID` environment variable for the current AZD environment.  Setting this environment variable will set the appropriate RBAC for the logged in user (using identity-based connections).
+
+    ```text
+    AZURE_PRINCIPAL_ID="3a1811ee-0c6c-4d3d-9e94-4dba3f74b414"
+    ```
+
+    > NOTE: The `AZURE_PRINCIPAL_ID` environment variable should be added to the AZD environment after `azd init`.  You can get this value manually by running the `az ad signed-in-user show --query id` command.
 
 1. Run the `azd provision` command to provision the Azure resources. When complete, several new environment variables will be added to the currently selected AZD environment file.
 
@@ -146,11 +154,17 @@ If there is a desire to provision the Azure resources and [run the Azure Functio
     }
     ```
 
-1. The Azure Function will make use of the environment variables specified in the current AZD environment. Additionally, your [local identity
-can be used to authenticate and interact with the Azure resources](https://learn.microsoft.com/azure/azure-functions/functions-reference?tabs=blob&pivots=programming-language-csharp#local-development-with-identity-based-connections), such as Event Hub.  Thereby using an identity-based connection locally.  The included `set-local-rbac.sh` script will load the current AZD environment variables and set the necessary RBAC permissions.
+1. The Azure Function can make use of the environment variables specified in the current AZD environment. The included `set-local-env.sh` script will export the current AZD environment variables, making them available for use by the Azure Functions Core Tools to run the functions locally.
 
     ```bash
     ./set-local-rbac.sh
+    ```
+
+1. Alternatively, export the environment variables using the following command:
+    
+    ```bash
+    AZD_ENVIRONMENT_NAME=$(jq -r '.defaultEnvironment' .azure/config.json)
+    set -a; source "./.azure/$AZD_ENVIRONMENT_NAME/.env"; set +a
     ```
 
 1. Start the Azurite storage emulator.
