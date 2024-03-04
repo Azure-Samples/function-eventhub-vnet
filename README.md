@@ -53,7 +53,7 @@ The function app contains two functions - one to push events to the event hub, a
 
 ### No virtual network
 
-The diagram below depicts the high-level resource architecture when no virtual network is used.  This may be suitable for local development when it is suitable to push the Function application code from a development workstation or CI/CD pipeline/workflow without a virtual network connected build agent.
+The diagram below depicts the high-level resource architecture when no virtual network is used.  This may be suitable for local development when it is suitable to execute the Function application code from a development workstation or CI/CD pipeline/workflow without a virtual network connected build agent.
 
 ![High-level architecture with no virtual network - Application Insights, Azure Storage account, Key Vault, Azure Function and Event Hub](assets/images/architecture-no-vnet.png)
 
