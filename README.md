@@ -53,7 +53,7 @@ The function app contains two functions - one to push events to the event hub, a
 
 ### No virtual network
 
-The diagram below depicts the high-level resource architecture when no virtual network is used.  This may be suitable for local development when it is suitable to push the Function application code from a development workstation or CI/CD pipeline/workflow without a virtual network connected build agent.
+The diagram below depicts the high-level resource architecture when no virtual network is used.  This may be suitable for local development when it is suitable to execute the Function application code from a development workstation or CI/CD pipeline/workflow without a virtual network connected build agent.
 
 ![High-level architecture with no virtual network - Application Insights, Azure Storage account, Key Vault, Azure Function and Event Hub](assets/images/architecture-no-vnet.png)
 
@@ -69,13 +69,37 @@ Alternatively, the Azure resources can be configured to use virtual network inte
 
 The following prerequisites are required to use this application.
 
-- [Azure Developer CLI](https://aka.ms/azd-install)
+- [Azure Developer CLI](https://aka.ms/azd-install) (_used to provision Azure resources and deploy application code_)
 - [.NET 6](https://dotnet.microsoft.com/download/dotnet/6.0)
 - [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local) (_to run Azure Function locally_)
 
 Optionally, use the included dev container which contains the necessary prerequisites.
 
-### Quickstart
+### Get the code
+
+There are two options for getting the code & related assets - clone the repo via `git clone` and make it your own, or use the Azure Developer CLI (AZD) to clone the template locally and set the AZD environment.
+
+#### Option 1: Clone via git
+
+1. Use `git clone` to clone the repo.
+1. Authenticate with AZD.
+
+    ```bash
+    # Log in to AZD.
+    azd auth login
+    ```
+
+#### Option 2: Initialize with AZD
+
+1. Create a new directory (e.g., function-eventhub-vnet) and navigate to the new directory.
+
+    ```bash
+    # Create a new directory
+    mkdir function-eventhub-vnet
+
+    # Move to the new directory
+    cd function-eventhub-vnet
+    ```
 
 1. Authenticate with AZD, initialize the project and set the necessary environment settings.
 
@@ -87,7 +111,16 @@ Optionally, use the included dev container which contains the necessary prerequi
     azd init --template function-eventhub-vnet
     ```
 
-1. When prompted by AZD, provide the name (e.g., "my-function") for the AZD environment to use without a virtual network.
+1. When prompted by AZD, provide the name (e.g., "my-function-local") for the AZD environment to use without a virtual network.
+
+### Set AZD environment variables
+
+1. If you don't yet have an AZD environment, create a new environment using the `azd env new` command.  For example,
+
+    ```bash
+    azd env new my-function-local
+    ```
+
 1. Create environment settings to indicate that virtual network integration and private endpoints are not used.  The template defaults to __not__ using virtual network integration nor private endpoints; using the environment settings makes this explicit.
 
     ```bash
@@ -95,14 +128,73 @@ Optionally, use the included dev container which contains the necessary prerequi
     azd env set USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT false
     ```
 
-1. For working without virtual network functionality, use the `azd up` command to provision the Azure resources and deploy the Azure Function code.
+### Run locally
 
-    ```bash
-    # Provision the Azure resources and deploy the Azure Function app.
-    azd up
+If there is a desire to provision the Azure resources and [run the Azure Function locally](https://learn.microsoft.com/azure/azure-functions/functions-develop-local) (e.g. dev & debugging purposes), you can use AZD (use the `azd provision` command) to provision the resources.  
+
+1. Ensure your local (currently logged in user) principal ID is specified in the `AZURE_PRINCIPAL_ID` environment variable for the current AZD environment.  Setting this environment variable will set the appropriate RBAC for the logged in user (using identity-based connections).
+
+    ```text
+    AZURE_PRINCIPAL_ID="3a1811ee-0c6c-4d3d-9e94-4dba3f74b414"
     ```
 
-#### Optional: Use a virtual network
+    > NOTE: The `AZURE_PRINCIPAL_ID` environment variable should be added to the AZD environment after `azd init`.  You can get this value manually by running the `az ad signed-in-user show --query id` command.
+
+1. Run the `azd provision` command to provision the Azure resources. When complete, several new environment variables will be added to the currently selected AZD environment file.
+
+    ```text
+    APPLICATIONINSIGHTS_CONNECTION_STRING=""
+    EVENTHUB_CONSUMER_GROUP_NAME=""
+    EVENTHUB_NAME=""
+    EVENTHUB_NAMESPACE=""
+    EVENTHUB_CONNECTION__fullyQualifiedNamespace=""
+    ```
+
+1. Create and add the following to the _local.settings.json_ file in the `/src` directory.
+
+    ```json
+    {
+      "IsEncrypted": false,
+      "Values": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+      }
+    }
+    ```
+
+1. The Azure Function can make use of the environment variables specified in the current AZD environment. The included `set-local-env.sh` script will export the current AZD environment variables, making them available for use by the Azure Functions Core Tools to run the functions locally.
+
+    ```bash
+    ./set-local-rbac.sh
+    ```
+
+1. Alternatively, export the environment variables using the following command:
+
+    ```bash
+    AZD_ENVIRONMENT_NAME=$(jq -r '.defaultEnvironment' .azure/config.json)
+    set -a; source "./.azure/$AZD_ENVIRONMENT_NAME/.env"; set +a
+    ```
+
+1. Start the Azurite storage emulator.
+1. Run the Azure Functions locally.  From the `/src` directory, run the `func host start` command.
+
+### Deploy to Azure
+
+To deploy to Azure, you can optionally create a new AZD environment.  Thereby having one AZD environment for local development, and another for deploying to Azure.
+
+1. Create an AZD environment.
+
+    ```bash
+    azd env new my-function
+    ```
+  
+1. Use AZD to provision the Azure resources and deploy the Azure Function code.
+
+      ```bash
+      azd up
+      ```
+
+### Optional: Use a virtual network
 
 1. Create an AZD environment for use with a virtual network, and set the necessary environment settings.
 
@@ -119,21 +211,3 @@ Optionally, use the included dev container which contains the necessary prerequi
 1. When using vnets and `USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT="true"`, use the `azd provision` command to provision the Azure resources.  You will not be able to deploy application code due to the private endpoint on the Azure Function.  Deployment will need to be done from an agent connected to the virtual network.
 
     > NOTE: If you want to deploy the function code and are not connected to the virtual network, use the Azure Portal to configure networking access restrictions for the function app to allow public access.  The run `azd deploy` to deploy the application.
-
-### Run the Azure Function locally
-
-If there is a desire to provision the Azure resources and [run the Azure Function locally](https://learn.microsoft.com/azure/azure-functions/functions-develop-local) (e.g. dev & debugging purposes), you can use AZD (use the `azd provision` command) to provision the resources.  Once provisioned, update the [_local.settings.json_](https://learn.microsoft.com/azure/azure-functions/functions-develop-local#local-settings-file) file to refer to the newly provisioned Event Hub, Application Insights, and optionally Azure Storage (if not using Azurite).
-
-```json
-{
-  "IsEncrypted": false,
-  "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "APPLICATIONINSIGHTS_CONNECTION_STRING": "[YOUR-APPLICATION-INSIGHTS-CONNECTION-STRING]",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "EventHubConnection": "[YOUR-EVENT-HUB-NAMESPACE-SHARED-ACCESS-POLICY-CONNECTION-STRING]",
-    "EventHubName": "evh-widget",
-    "EventHubConsumerGroup": "widgetfunctionconsumergroup"
-  }
-}
-```

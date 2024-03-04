@@ -15,6 +15,9 @@ param virtualNetworkAddressSpacePrefix string = '10.1.0.0/16'
 param virtualNetworkIntegrationSubnetAddressSpacePrefix string = '10.1.1.0/24'
 param virtualNetworkPrivateEndpointSubnetAddressSpacePrefix string = '10.1.2.0/24'
 
+@description('The principal ID of the user to assign application roles. If not provided, the role will not be assigned.')
+param principalId string = ''
+
 // Tags that should be applied to all resources.
 // 
 // Note that 'azd-service-name' tags should be applied separately to service host resources.
@@ -95,6 +98,28 @@ module eventHubSenderRoleAssignment 'core/security/role.bicep' = {
     principalId: functionApp.outputs.identityPrincipalId
     roleDefinitionId: eventHubDataSenderUserRoleDefintion.name
     principalType: 'ServicePrincipal'
+  }
+}
+
+// Set the RBAC roles for the provided Azure principalId (e.g., the user executing the deployment).
+module eventHubReceiverRoleUserAssignment 'core/security/role.bicep' = if (!empty(principalId)) {
+  name: 'eventHubReceiverRoleUserAssignment'
+  scope: rg
+  params: {
+    principalId: principalId
+    roleDefinitionId: eventHubDataReceiverUserRoleDefintion.name
+    principalType: 'User'
+  }
+}
+
+// Set the RBAC roles for the provided Azure principalId (e.g., the user executing the deployment).
+module eventHubSenderRoleUserAssignment 'core/security/role.bicep' = if (!empty(principalId)) {
+  name: 'eventHubSenderRoleUserAssignment'
+  scope: rg
+  params: {
+    principalId: principalId
+    roleDefinitionId: eventHubDataSenderUserRoleDefintion.name
+    principalType: 'User'
   }
 }
 
@@ -297,9 +322,9 @@ module functionApp 'core/host/functions.bicep' = {
     applicationInsightsName: appInsights.outputs.name
     virtualNetworkIntegrationSubnetId: useVirtualNetworkIntegration ? vnet.outputs.virtualNetworkSubnets[0].id : ''
     appSettings: {
-      EventHubConnection__fullyQualifiedNamespace: '${eventHubNamespace.outputs.eventHubNamespaceName}.servicebus.windows.net'
-      EventHubName: eventHub.outputs.EventHubName
-      EventHubConsumerGroup: eventHub.outputs.EventHubConsumerGroupName
+      EVENTHUB_CONNECTION__fullyQualifiedNamespace: '${eventHubNamespace.outputs.eventHubNamespaceName}.servicebus.windows.net'
+      EVENTHUB_NAME: eventHub.outputs.EventHubName
+      EVENTHUB_CONSUMER_GROUP_NAME: eventHub.outputs.EventHubConsumerGroupName
 
       // Needed for EP plans
       WEBSITE_CONTENTSHARE: functionAppName
@@ -323,3 +348,9 @@ module functionApp 'core/host/functions.bicep' = {
     }
   }
 }
+
+output APPLICATIONINSIGHTS_CONNECTION_STRING string = appInsights.outputs.connectionString
+output EVENTHUB_CONSUMER_GROUP_NAME string = eventHub.outputs.EventHubConsumerGroupName
+output EVENTHUB_NAME string = eventHub.outputs.EventHubName
+output EVENTHUB_NAMESPACE string = eventHubNamespace.outputs.eventHubNamespaceName
+output EVENTHUB_CONNECTION__fullyQualifiedNamespace string = '${eventHubNamespace.outputs.eventHubNamespaceName}.servicebus.windows.net'
