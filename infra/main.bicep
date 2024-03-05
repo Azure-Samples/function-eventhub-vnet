@@ -15,14 +15,16 @@ param virtualNetworkAddressSpacePrefix string = '10.1.0.0/16'
 param virtualNetworkIntegrationSubnetAddressSpacePrefix string = '10.1.1.0/24'
 param virtualNetworkPrivateEndpointSubnetAddressSpacePrefix string = '10.1.2.0/24'
 
+// AZD will set AZURE_PRINCIPAL_ID to the principal ID of the user executing the deployment (identity of the logged in user of AZD).
 @description('The principal ID of the user to assign application roles.')
 param principalId string = ''
 
-// @allowed([
-//   'ServicePrincipal'
-//   'User'
-// ])
+// Locally, the AZURE_PRINCIPAL_ID may be a user. If running in a GitHub pipeline, AZURE_PRINCIPAL_ID is a service principal.
+// Not setting @allowed here to make it easier to use AZD without setting additional env variables (thus defaulting to '').
 param principalType string = 'User'
+
+// Ensure that if the principalType is '' (see note for principalType), then 'User' is used instead.
+var ptype = empty(trim(principalType)) ? 'User' : principalType
 
 // Tags that should be applied to all resources.
 // 
@@ -114,7 +116,7 @@ module eventHubReceiverRoleUserAssignment 'core/security/role.bicep' = if (!empt
   params: {
     principalId: principalId
     roleDefinitionId: eventHubDataReceiverUserRoleDefintion.name
-    principalType: principalType
+    principalType: ptype
   }
 }
 
@@ -125,7 +127,7 @@ module eventHubSenderRoleUserAssignment 'core/security/role.bicep' = if (!empty(
   params: {
     principalId: principalId
     roleDefinitionId: eventHubDataSenderUserRoleDefintion.name
-    principalType: principalType
+    principalType: ptype
   }
 }
 
