@@ -63,7 +63,6 @@ jobs:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Provision
-        # run: azd up --no-prompt
         run: azd provision --no-state --no-prompt
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
@@ -74,7 +73,6 @@ jobs:
           USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT: ${{vars.USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT }}
 
       - name: Deploy to Azure
-        # run: azd up --no-prompt
         run: azd deploy --no-prompt
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
@@ -89,7 +87,7 @@ jobs:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}-vnet
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          AZURE_PRINCIPAL_TYPE: 'ServicePrincipal'
+          AZURE_PRINCIPAL_TYPE: ServicePrincipal
           USE_VIRTUAL_NETWORK_INTEGRATION: true
           USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT: true
           VIRTUAL_NETWORK_ADDRESS_SPACE_PREFIX: "10.1.0.0/16"
