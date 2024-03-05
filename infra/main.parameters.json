@@ -11,6 +11,9 @@
     "principalId": {
       "value": "${AZURE_PRINCIPAL_ID}"
     },
+    "principalType": {
+      "value": "${AZURE_PRINCIPAL_TYPE}"
+    },
     "useVirtualNetworkIntegration": {
       "value": "${USE_VIRTUAL_NETWORK_INTEGRATION}"
     },
