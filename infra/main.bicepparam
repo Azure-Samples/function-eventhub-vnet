@@ -1,5 +1,4 @@
 using './main.bicep'
-
 param environmentName = readEnvironmentVariable('AZURE_ENV_NAME')
 param location = readEnvironmentVariable('AZURE_LOCATION')
 param useVirtualNetworkIntegration = bool(readEnvironmentVariable('USE_VIRTUAL_NETWORK_INTEGRATION', 'false'))
