@@ -24,7 +24,7 @@ param principalId string = ''
 param principalType string = 'User'
 
 // Ensure that if the principalType is '' (see note for principalType), then 'User' is used instead.
-var ptype = empty(trim(principalType)) ? 'User' : principalType
+// var ptype = empty(trim(principalType)) ? 'User' : principalType
 
 // Tags that should be applied to all resources.
 // 
@@ -116,7 +116,7 @@ module eventHubReceiverRoleUserAssignment 'core/security/role.bicep' = if (!empt
   params: {
     principalId: principalId
     roleDefinitionId: eventHubDataReceiverUserRoleDefintion.name
-    principalType: ptype
+    principalType: principalType
   }
 }
 
@@ -127,7 +127,7 @@ module eventHubSenderRoleUserAssignment 'core/security/role.bicep' = if (!empty(
   params: {
     principalId: principalId
     roleDefinitionId: eventHubDataSenderUserRoleDefintion.name
-    principalType: ptype
+    principalType: principalType
   }
 }
 
