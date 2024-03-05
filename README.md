@@ -132,13 +132,7 @@ There are two options for getting the code & related assets - clone the repo via
 
 If there is a desire to provision the Azure resources and [run the Azure Function locally](https://learn.microsoft.com/azure/azure-functions/functions-develop-local) (e.g. dev & debugging purposes), you can use AZD (use the `azd provision` command) to provision the resources.  
 
-1. Ensure your local (currently logged in user) principal ID is specified in the `AZURE_PRINCIPAL_ID` environment variable for the current AZD environment.  Setting this environment variable will set the appropriate RBAC for the logged in user (using identity-based connections).
-
-    ```text
-    AZURE_PRINCIPAL_ID="3a1811ee-0c6c-4d3d-9e94-4dba3f74b414"
-    ```
-
-    > NOTE: The `AZURE_PRINCIPAL_ID` environment variable should be added to the AZD environment after `azd init`.  You can get this value manually by running the `az ad signed-in-user show --query id` command.
+Ensure you are logged into AZD.  AZD will automatically set the `AZURE_PRINCIPAL_ID` environment variable.  The main.bicep file will set the RBAC permissions for the identity specified by `AZURE_PRINCIPAL_ID`.
 
 1. Run the `azd provision` command to provision the Azure resources. When complete, several new environment variables will be added to the currently selected AZD environment file.
 
