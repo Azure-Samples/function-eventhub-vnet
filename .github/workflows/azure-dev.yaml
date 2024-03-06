@@ -62,7 +62,7 @@ jobs:
         env:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Provision
+      - name: Provision (NO VIRTUAL NETWORK)
         run: azd provision --no-state --no-prompt
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
