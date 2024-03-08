@@ -23,9 +23,6 @@ param principalId string = ''
 // Not setting @allowed here to make it easier to use AZD without setting additional env variables (thus defaulting to '').
 param principalType string = 'User'
 
-// Ensure that if the principalType is '' (see note for principalType), then 'User' is used instead.
-// var ptype = empty(trim(principalType)) ? 'User' : principalType
-
 // Tags that should be applied to all resources.
 // 
 // Note that 'azd-service-name' tags should be applied separately to service host resources.
