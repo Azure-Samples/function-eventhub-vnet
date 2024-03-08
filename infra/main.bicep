@@ -20,7 +20,10 @@ param virtualNetworkPrivateEndpointSubnetAddressSpacePrefix string = '10.1.2.0/2
 param principalId string = ''
 
 // Locally, the AZURE_PRINCIPAL_ID may be a user. If running in a GitHub pipeline, AZURE_PRINCIPAL_ID is a service principal.
-// Not setting @allowed here to make it easier to use AZD without setting additional env variables (thus defaulting to '').
+@allowed([
+  'User'
+  'ServicePrincipal'
+])
 param principalType string = 'User'
 
 // Tags that should be applied to all resources.
