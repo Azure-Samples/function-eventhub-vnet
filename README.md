@@ -159,7 +159,7 @@ Ensure you are logged into AZD.  AZD will automatically set the `AZURE_PRINCIPAL
 1. The Azure Function can make use of the environment variables specified in the current AZD environment. The included `set-local-env.sh` script will export the current AZD environment variables, making them available for use by the Azure Functions Core Tools to run the functions locally.
 
     ```bash
-    ./set-local-rbac.sh
+    ./set-local-env.sh
     ```
 
 1. Alternatively, export the environment variables using the following command:
