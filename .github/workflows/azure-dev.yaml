@@ -62,32 +62,28 @@ jobs:
         env:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Provision
-        # run: azd up --no-prompt
+      - name: Provision (NO VIRTUAL NETWORK)
         run: azd provision --no-state --no-prompt
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          USE_VIRTUAL_NETWORK_INTEGRATION: ${{ vars.USE_VIRTUAL_NETWORK_INTEGRATION }}
-          USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT: ${{vars.USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT }}
+          AZURE_PRINCIPAL_TYPE: ServicePrincipal
 
       - name: Deploy to Azure
-        # run: azd up --no-prompt
         run: azd deploy --no-prompt
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          USE_VIRTUAL_NETWORK_INTEGRATION: ${{ vars.USE_VIRTUAL_NETWORK_INTEGRATION }}
-          USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT: ${{vars.USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT }}
 
-      - name: Provision with vnet
+      - name: Provision with virtual network
         run: azd provision --no-state --no-prompt
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}-vnet
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
           AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          AZURE_PRINCIPAL_TYPE: ServicePrincipal
           USE_VIRTUAL_NETWORK_INTEGRATION: true
           USE_VIRTUAL_NETWORK_PRIVATE_ENDPOINT: true
           VIRTUAL_NETWORK_ADDRESS_SPACE_PREFIX: "10.1.0.0/16"
