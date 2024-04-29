@@ -11,13 +11,26 @@ param storageAccountName string
 
 // Runtime Properties
 @allowed([
-  'dotnet', 'dotnetcore', 'dotnet-isolated', 'node', 'python', 'java', 'powershell', 'custom'
+  'dotnet'
+  'dotnetcore'
+  'dotnet-isolated'
+  'node'
+  'python'
+  'java'
+  'powershell'
+  'custom'
 ])
 param runtimeName string
 
 // Valid values for FUNCTIONS_WORKER_RUNTIME (https://learn.microsoft.com/en-us/azure/azure-functions/functions-app-settings#functions_worker_runtime)
 @allowed([
-  'dotnet', 'dotnet-isolated', 'node', 'python', 'java', 'powershell', 'custom'
+  'dotnet'
+  'dotnet-isolated'
+  'node'
+  'python'
+  'java'
+  'powershell'
+  'custom'
 ])
 param functionsWorkerRuntime string
 param runtimeNameAndVersion string = '${functionsWorkerRuntime}|${runtimeVersion}'
@@ -25,18 +38,22 @@ param runtimeVersion string
 
 // Function Settings
 @allowed([
-  '~4', '~3', '~2', '~1'
+  '~4'
+  '~3'
+  '~2'
+  '~1'
 ])
 param extensionVersion string = '~4'
 
 // Microsoft.Web/sites Properties
-@allowed([ 'functionapp', 'functionapp,linux' ])
+@allowed(['functionapp', 'functionapp,linux'])
 param kind string = 'functionapp,linux'
 
 // Microsoft.Web/sites/config
 param allowedOrigins array = []
 param alwaysOn bool = true
 param appCommandLine string = ''
+@secure()
 param appSettings object = {}
 param clientAffinityEnabled bool = false
 param enableOryxBuild bool = contains(kind, 'linux')
@@ -55,9 +72,10 @@ param virtualNetworkIntegrationSubnetId string = ''
 param storageKeyVaultSecretName string = 'storage-connection-string'
 
 //NEW
-resource uami 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (!empty(userAssignedIdentityName)) {
-  name: userAssignedIdentityName
-}
+resource uami 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing =
+  if (!empty(userAssignedIdentityName)) {
+    name: userAssignedIdentityName
+  }
 
 module functions 'appservice.bicep' = {
   name: '${name}-functions'
@@ -70,15 +88,18 @@ module functions 'appservice.bicep' = {
     appCommandLine: appCommandLine
     applicationInsightsName: applicationInsightsName
     appServicePlanId: appServicePlanId
-    appSettings: union(appSettings,
+    appSettings: union(
+      appSettings,
       {
         FUNCTIONS_EXTENSION_VERSION: extensionVersion
         FUNCTIONS_WORKER_RUNTIME: functionsWorkerRuntime
       },
       // Use the managed idenitty if available, otherwise use connection string in Key Vault.
-      (managedIdentity) 
-       ? { AzureWebJobsStorage__accountName: storage.name } 
-       : { AzureWebJobsStorage: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=${storageKeyVaultSecretName})' }
+      (managedIdentity)
+        ? { AzureWebJobsStorage__accountName: storage.name }
+        : {
+            AzureWebJobsStorage: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=${storageKeyVaultSecretName})'
+          }
     )
     // If not using managed identity or Key Vault, use the connections string.
     // { AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${storage.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}' }
